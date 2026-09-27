@@ -1493,7 +1493,7 @@ function drawPaper(o, W, H, S, st, r, fx) {
 function composite(out, D, st, fx, r) {
   const o = out.getContext('2d'), W = out.width, H = out.height, S = D.S;
   o.setTransform(1, 0, 0, 1, 0, 0);
-  drawPaper(o, W, H, S, st, r, fx);
+  if (fx.paper !== false) drawPaper(o, W, H, S, st, r, fx); else o.clearRect(0, 0, W, H);
   // watercolour granulation lives only where there is colour
   const c = D.col; c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.globalCompositeOperation = 'source-atop'; c.globalAlpha = st.gran;
   c.fillStyle = c.createPattern(TILES.gran, 'repeat'); c.fillRect(0, 0, W, H); c.restore();
@@ -1541,6 +1541,7 @@ function renderPlate(canvas, P) {
   const r = drawSpecimen(canvas.width, canvas.height, P);
   composite(canvas, r.D, STYLE, fx, new Rand(hash(P.seed + '|paper')));
   drawLabels(canvas, r.D, r.nm, fx);
+  if (fx.frame) drawRuledBorder(canvas.getContext("2d"), canvas.width / 1000, canvas.height / (canvas.width / 1000), hex(STYLE.ink));
   return { kind: r.kind, palKey: r.palKey, info: r.info, nm: r.nm };
 }
 // A second, graded wash inside a face: clear on the lit side, deeper toward the shadow side.
@@ -1588,4 +1589,11 @@ function gemProfile(D, G, cut, x0, x1, top, R) {
   for (const p of polys) wash(D, p.pts, ramp4(R, p.t), 1, { wob: .3, edge: D.style.edge * .5 });
   for (const p of polys) { strokePoly(D, p.pts, D.style.inner, .9); if (p.t > .8) eraseLine(D, lp(p.pts[0], p.pts[1], .2), lp(p.pts[0], p.pts[p.pts.length - 1], .5), 1.3, .5); }
   inkLine(D, outline, D.style.outline || .6, true, D.style.outline ? 1 : .5);
+}
+// A double ruled border, heavy outside and fine within, as on the posters. u = pixels per plate unit.
+function drawRuledBorder(o, u, Hu, ink) {
+  o.save(); o.setTransform(1, 0, 0, 1, 0, 0); o.globalCompositeOperation = 'multiply'; o.strokeStyle = rgb(ink, .92);
+  o.lineWidth = 1.6 * u; o.strokeRect(20 * u, 20 * u, (1000 - 40) * u, (Hu - 40) * u);
+  o.lineWidth = .7 * u; o.strokeRect(27 * u, 27 * u, (1000 - 54) * u, (Hu - 54) * u);
+  o.restore();
 }

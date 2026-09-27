@@ -7,11 +7,12 @@ Procedural mineral specimens drawn as 19th-century hand-coloured engravings: the
 | File | What it is |
 |---|---|
 | `index.html` | The Specimen Press: a whole plate of specimens under one title, printed as an atlas plate. Choose a subject (The Mineral Kingdom, Quartz & its Varieties, Agates, Precious Stones, Ores, A Cabinet of Minerals), a colouring (a family of colours or a single mineral's palette), how many figures, and the fineness, up to 3600 × 4800 px for printing. Titles, subtitles and the explanation of the plate are generated from what is on it; the register number travels in the link, and Download saves a PNG. |
-| `specimen.html` | One specimen at a time, with seed, kind, palette, specimen size and image size controls. <kbd>Space</kbd> draws a new specimen, <kbd>←</kbd> <kbd>→</kbd> step through seeds. |
+| `specimen.html` | A Single Specimen: the press, one specimen at a time. Choose the kind of specimen, its colouring, its size upon the plate and the fineness; Download saves a PNG. The two pages link to each other from under the title. |
 | `catalogue.html` | Every specimen kind in every palette, one example per square. Click a plate to see it larger. |
 | `tools/review.html` | Side-by-side review sheet for development. Query parameters: `kind`, `type` (sub-type, e.g. `sunburst`, `waterline`, `veins`), `pal`, `n`, `cols`, `seed`, `scale`, `w`, `label=0`. |
 | `specimen-engine.js` | The drawing engine all the pages share. |
 | `poster.js` | Poster planning, layout and printing, on top of the engine. |
+| `press.css`, `press-ui.js` | The look and the shared workings of the two press pages: the paper, the page links, the ledger of recent work, downloading and the keyboard. |
 
 No build step and no dependencies beyond Google Fonts. Serve the folder with any static server, for example:
 
