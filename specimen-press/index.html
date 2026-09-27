@@ -1,226 +1,345 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Specimen Press</title>
-<meta name="description" content="Procedural hand-coloured engraving of a mineral specimen, one plate at a time.">
+<title>The Specimen Press</title>
+<meta name="description" content="A machine for engraving plates of mineral specimens: themed posters printed as hand-coloured engravings.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&display=swap">
 <style>
+  /* One world: the page is a sheet of the same laid paper the plate is printed on. */
   :root {
-    color-scheme: dark;
-    --bg: #191b1a;
-    --panel: #222523;
-    --panel-2: #2a2d2b;
-    --line: #3a3e3b;
-    --text: #e8e2d2;
-    --muted: #a09b8c;
-    --brass: #c9ab6b;
-    --brass-ink: #191b1a;
-    --focus: #e3c888;
-    --display: "IM Fell English", "Iowan Old Style", Georgia, serif;
-    --body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
-    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    color-scheme: light;
+    --paper: #efe4c9;
+    --paper-hi: #f5ecd6;
+    --ink: #34251a;
+    --ink-2: #6f5b46;
+    --rule: rgba(52, 37, 26, .55);
+    --rule-faint: rgba(52, 37, 26, .22);
+    --red: #a13a26;
+    --serif: "IM Fell English", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    --caps: "IM Fell English SC", "IM Fell English", "Iowan Old Style", Georgia, serif;
   }
-  html, body { background: var(--bg); color: var(--text); }
-  body { font-family: var(--body); font-size: 14px; line-height: 1.45; padding-inline: 20px; padding-block: 24px 48px; }
-  .wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 28px; }
-  header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; border-bottom: 1px solid var(--line); padding-bottom: 14px; }
-  h1 { font-family: var(--display); font-weight: 400; font-size: 34px; letter-spacing: .01em; margin: 0; }
-  header p { margin: 0; color: var(--muted); font-size: 14px; }
-  .bench { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 28px; align-items: start; }
-  @media (max-width: 820px) { .bench { grid-template-columns: 1fr; } }
-  .plate-wrap { margin: 0; display: grid; justify-items: center; }
-  #plate { width: 100%; max-width: 640px; aspect-ratio: 4 / 5; height: auto; display: block; box-shadow: 0 1px 0 rgba(255,255,255,.04), 0 18px 40px rgba(0,0,0,.55), 0 4px 10px rgba(0,0,0,.4); background: #f4eddd; }
-  .panel { display: grid; gap: 18px; }
-  .card { background: var(--panel); border: 1px solid var(--line); padding: 16px 16px 14px; display: grid; gap: 10px; }
-  .card h2 { font-family: var(--display); font-weight: 400; font-style: italic; font-size: 22px; line-height: 1.2; margin: 0; text-wrap: balance; }
-  .card dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; margin: 0; font-size: 13px; }
-  .card dt { color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-size: 11px; padding-top: 2px; }
-  .card dd { margin: 0; }
-  .eyebrow { color: var(--brass); text-transform: uppercase; letter-spacing: .12em; font-size: 11px; }
-  .controls { display: grid; gap: 12px; }
-  .row { display: flex; gap: 8px; align-items: stretch; }
-  label.field { display: grid; gap: 4px; font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
-  .field output { color: var(--text); font-family: var(--mono); letter-spacing: 0; text-transform: none; }
-  .field-head { display: flex; justify-content: space-between; }
-  input[type=text], select { font: 14px var(--body); color: var(--text); background: var(--panel-2); border: 1px solid var(--line); padding: 7px 9px; border-radius: 3px; width: 100%; min-width: 0; }
-  input[type=range] { width: 100%; accent-color: var(--brass); }
-  #seed { font-family: var(--mono); }
-  button { font: 500 13px var(--body); color: var(--text); background: var(--panel-2); border: 1px solid var(--line); padding: 7px 12px; border-radius: 3px; cursor: pointer; white-space: nowrap; }
-  button:hover { border-color: var(--muted); }
-  button.primary { background: var(--brass); color: var(--brass-ink); border-color: var(--brass); }
-  button.primary:hover { filter: brightness(1.07); }
-  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
-  .checks { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; font-size: 13px; }
-  .checks label { display: flex; gap: 7px; align-items: center; cursor: pointer; }
-  .hint { color: var(--muted); font-size: 12px; margin: 0; }
-  kbd { font-family: var(--mono); font-size: 11px; border: 1px solid var(--line); border-bottom-width: 2px; padding: 0 4px; border-radius: 3px; color: var(--text); }
-  .strip h3 { font-family: var(--display); font-weight: 400; font-size: 20px; margin: 0 0 4px; }
-  .strip p { margin: 0 0 12px; color: var(--muted); font-size: 13px; }
-  #thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 12px; }
-  .thumb { background: none; border: 1px solid transparent; padding: 0; display: grid; gap: 4px; cursor: pointer; color: var(--muted); font: 12px var(--mono); }
-  .thumb canvas { width: 100%; height: auto; aspect-ratio: 4 / 5; display: block; box-shadow: 0 6px 14px rgba(0,0,0,.45); background: #f4eddd; }
-  .thumb:hover canvas { outline: 1px solid var(--brass); }
-  #status { min-height: 1.2em; }
+  html, body { background: var(--paper); color: var(--ink); }
+  body { margin: 0; font: 16px/1.45 var(--serif); padding-inline: 20px; padding-block: 16px; }
+  /* the desk sits under everything; nothing between it and the plate isolates the blend */
+  #desk { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; }
+  ::selection { background: rgba(161, 58, 38, .22); }
+
+  /* two columns: the plate runs the full height on the left; the title and the press share the right */
+  .folio { position: relative; max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(330px, 420px);
+    grid-template-areas: "plate head" "plate press"; grid-template-rows: auto 1fr; column-gap: 44px; align-items: start; }
+  @media (max-width: 900px) { .folio { grid-template-columns: 1fr; grid-template-areas: "head" "plate" "press"; row-gap: 20px; } }
+
+  .titlepage { grid-area: head; text-align: center; display: grid; justify-items: center; padding-top: 22px; margin-bottom: 12px; }
+  @media (max-width: 900px) { .titlepage { padding-top: 6px; } }
+  .titlepage .kicker { font: 12.5px var(--caps); letter-spacing: .2em; color: var(--ink-2); margin: 0; }
+  h1 { font: 400 clamp(26px, 2.6vw, 38px)/1.05 var(--caps); letter-spacing: .1em; margin: 2px 0 0; white-space: nowrap; }
+  .titlepage .sub { font: italic 16px/1.3 var(--serif); margin: 3px 0 7px; }
+  .titlepage .sub i { font-style: normal; font-family: var(--caps); letter-spacing: .06em; }
+  .double-rule { width: 100%; height: 5px; border-top: 2.5px solid var(--ink); border-bottom: .8px solid var(--ink); opacity: .85; }
+
+  .plate-page { grid-area: plate; display: grid; justify-items: center; }
+  #poster { display: block; max-width: 100%; max-height: calc(100vh - 32px); min-height: 360px; width: auto; height: auto; mix-blend-mode: multiply; }
+  @media (max-width: 900px) { #poster { max-height: none; min-height: 0; } }
+
+  .letterpress { grid-area: press; display: grid; gap: 12px; }
+  .preface { margin: 0; text-align: justify; hyphens: auto; font-size: 15px; line-height: 1.4; }
+  .dropcap { float: left; font: 46px/.8 var(--caps); color: var(--red); padding: 4px 7px 0 0; }
+  .section-head { font: 13px var(--caps); letter-spacing: .22em; text-align: center; margin: 2px 0 0; color: var(--ink-2); display: flex; align-items: center; gap: 12px; }
+  .section-head::before, .section-head::after { content: ""; flex: 1; border-top: .8px solid var(--rule-faint); }
+
+  /* the seal, and the register number it stamps */
+  .seal-row { display: flex; align-items: center; gap: 22px; padding: 4px 0 2px 8px; }
+  .seal { position: relative; flex: none; width: 96px; height: 96px; border: 0; border-radius: 50%; cursor: pointer; padding: 0;
+    background: radial-gradient(circle at 34% 30%, #c85a44 0, #9d3326 36%, #7d2419 68%, #5a150e 100%);
+    box-shadow: 0 2px 0 #4a110b, 0 7px 14px rgba(70, 25, 12, .32), inset 0 -3px 6px rgba(0, 0, 0, .25);
+    color: #f6dcc6; font: 13.5px/1.02 var(--caps); letter-spacing: .05em; text-shadow: 0 -1px 0 rgba(0, 0, 0, .45), 0 1px 0 rgba(255, 190, 170, .25);
+    transform: rotate(-5deg); transition: transform .25s cubic-bezier(.3, 1.5, .6, 1); }
+  .seal::before { content: ""; position: absolute; inset: -6px -8px -7px -5px; z-index: -1; background: #86271c;
+    border-radius: 47% 53% 44% 56% / 55% 45% 57% 43%; box-shadow: 0 6px 12px rgba(70, 25, 12, .25); }
+  .seal::after { content: ""; position: absolute; inset: 9px; border-radius: 50%; border: 1.5px solid rgba(255, 215, 195, .28); box-shadow: inset 0 1px 2px rgba(0, 0, 0, .3); }
+  .seal:hover { transform: rotate(3deg) scale(1.035); }
+  .seal:active { transform: rotate(3deg) scale(.96) translateY(2px); }
+  .register { display: grid; justify-items: center; gap: 0; }
+  .register .label { font: 13px var(--caps); letter-spacing: .14em; color: var(--ink-2); }
+  .register .num { display: flex; align-items: center; gap: 10px; }
+  /* old-style numerals hang below the line; drop the arrows to meet them */
+  .register .num .tab { position: relative; top: 4px; }
+  .register input { font: 30px/1.1 var(--caps); letter-spacing: .04em; color: var(--ink); background: transparent; border: 0; border-bottom: .9px solid transparent; width: 4.2em; text-align: center; padding: 0; }
+  .register input:hover, .register input:focus { border-bottom-color: var(--rule); }
+  .register .hint { font: italic 13.5px var(--serif); color: var(--ink-2); }
+
+  /* a printed form, with the blanks filled in by hand */
+  .form { display: grid; gap: 10px; margin: 0; }
+  .field { display: grid; grid-template-columns: 7.2em 1fr; align-items: baseline; gap: 10px; }
+  .field > label, .label-sc { font: 14.5px var(--caps); letter-spacing: .06em; white-space: nowrap; }
+  .form select, .form input[type=text] { font: italic 17.5px var(--serif); color: var(--ink); background: transparent; border: 0; border-bottom: .9px solid var(--rule); border-radius: 0; padding: 0 4px 1px; width: 100%; min-width: 0; }
+  .form input[type=text]::placeholder { color: rgba(111, 91, 70, .7); }
+  .form select { appearance: none; -webkit-appearance: none; padding-right: 20px; cursor: pointer; text-overflow: ellipsis;
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%2334251a' stroke-width='1.3'/%3E%3C/svg%3E") no-repeat right 4px center; }
+
+  /* the slider as an engraved rule */
+  .ruler-field { display: grid; gap: 0; }
+  .ruler-head { display: flex; justify-content: space-between; align-items: baseline; }
+  .ruler-head output { font: italic 17.5px var(--serif); }
+  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 20px; background: transparent; cursor: pointer; margin: 0; }
+  input[type=range]::-webkit-slider-runnable-track { height: 11px;
+    background: linear-gradient(var(--ink), var(--ink)) bottom / 100% 1px no-repeat,
+                repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px calc((100% - 1px) / 12)) bottom / 100% 6px no-repeat,
+                linear-gradient(90deg, var(--ink) 0 1px, transparent 1px calc(100% - 1px), var(--ink) calc(100% - 1px)) bottom / 100% 11px no-repeat; }
+  input[type=range]::-moz-range-track { height: 11px;
+    background: linear-gradient(var(--ink), var(--ink)) bottom / 100% 1px no-repeat,
+                repeating-linear-gradient(90deg, var(--ink) 0 1px, transparent 1px calc((100% - 1px) / 12)) bottom / 100% 6px no-repeat; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 13px; height: 15px; margin-top: -6px; background: var(--red); clip-path: polygon(50% 100%, 0 0, 100% 0); border: 0; }
+  input[type=range]::-moz-range-thumb { width: 13px; height: 15px; background: var(--red); clip-path: polygon(50% 100%, 0 0, 100% 0); border: 0; border-radius: 0; }
+
+  /* ticks in the ledger */
+  fieldset.particulars { border: 0; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; }
+  fieldset.particulars legend { font: 14.5px var(--caps); letter-spacing: .06em; padding: 0; margin-bottom: 4px; }
+  .tick { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 15px; }
+  .tick input { appearance: none; -webkit-appearance: none; width: 16px; height: 16px; margin: 0; flex: none; border: 1px solid var(--ink); background: transparent no-repeat center / 14px; cursor: pointer; }
+  .tick input:checked { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpath d='M3 3.5c3 2.6 6.2 6 10 9.6M12.6 2.6C9.6 6 6.4 9.4 3.4 13.2' fill='none' stroke='%2334251a' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E"); }
+
+  /* letterpress tabs */
+  .tab { font: 14.5px var(--caps); letter-spacing: .06em; color: var(--ink); background: transparent; cursor: pointer; padding: 3px 11px 4px;
+    border: 1px solid var(--ink); box-shadow: inset 0 0 0 2px var(--paper-hi), inset 0 0 0 2.8px rgba(52, 37, 26, .55); }
+  .tab:hover { background: rgba(52, 37, 26, .06); }
+  .tab:active { transform: translateY(1px); }
+  .tab.small { padding: 0 8px 1px; font-size: 16px; }
+  .actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .note { font: italic 14.5px var(--serif); color: var(--ink-2); }
+  :focus-visible { outline: 1.5px dashed var(--red); outline-offset: 3px; }
+
+  /* the ledger of plates lately engraved */
+  .ledger { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; max-height: 8.6em; overflow: auto; }
+  .ledger button { all: unset; box-sizing: border-box; width: 100%; display: flex; gap: 8px; align-items: baseline; cursor: pointer; padding: 1px 2px; font-size: 15px; }
+  .ledger button:hover { background: rgba(52, 37, 26, .06); }
+  .ledger button:focus-visible { outline: 1.5px dashed var(--red); outline-offset: 1px; }
+  .ledger .no { font-family: var(--caps); color: var(--red); min-width: 4.4em; }
+  .ledger .t { font-style: italic; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ledger .dots { flex: none; color: var(--ink-2); font-size: 13px; }
+  .ledger-empty { font: italic 14.5px var(--serif); color: var(--ink-2); margin: 0; }
+
+  @media (prefers-reduced-motion: reduce) { .seal { transition: none; } }
 </style>
 
-<div class="wrap">
-  <header>
-    <h1>Specimen Press</h1>
-    <p>Draws one mineral specimen at a time as a hand-coloured engraving.</p>
+<canvas id="desk" aria-hidden="true"></canvas>
+<main class="folio">
+  <header class="titlepage">
+    <p class="kicker">Plates of the Mineral Kingdom · <span id="year"></span></p>
+    <h1>The Specimen Press</h1>
+    <p class="sub"><i>or,</i> the Mineral Kingdom engraved upon Command</p>
+    <div class="double-rule" aria-hidden="true"></div>
   </header>
 
-  <div class="bench">
-    <figure class="plate-wrap">
-      <canvas id="plate" width="1200" height="1500" aria-label="Generated mineral specimen plate"></canvas>
-    </figure>
+    <section class="plate-page" aria-label="The plate">
+      <canvas id="poster" width="1200" height="1600" aria-label="The engraved plate"></canvas>
+    </section>
 
-    <aside class="panel">
-      <section class="card" aria-live="polite">
-        <span class="eyebrow" id="c-plate">Plate</span>
-        <h2 id="c-name">…</h2>
-        <dl>
-          <dt>Kind</dt><dd id="c-kind"></dd>
-          <dt>Form</dt><dd id="c-form"></dd>
-          <dt>Palette</dt><dd id="c-pal"></dd>
-          <dt>Image</dt><dd id="c-size"></dd>
-        </dl>
-      </section>
+    <section class="letterpress" aria-label="Instructions to the engraver">
+      <p class="preface"><span class="dropcap">T</span>his curious Engine, lately fallen into the hands of a travelling naturalist, engraves upon command a plate of mineral specimens, drawn from nature (or near enough) and coloured by hand.</p>
 
-      <div class="controls">
-        <label class="field" for="seed">Seed
-          <div class="row">
-            <button id="prev" aria-label="Previous seed">‹</button>
-            <input type="text" id="seed" inputmode="numeric" autocomplete="off">
-            <button id="next" aria-label="Next seed">›</button>
+      <div class="seal-row">
+        <button class="seal" id="roll" type="button">Engrave<br>a New<br>Plate</button>
+        <div class="register">
+          <label class="label" for="seed">Register Nº</label>
+          <div class="num">
+            <button class="tab small" id="prev" type="button" aria-label="Previous plate">‹</button>
+            <input type="text" id="seed" inputmode="numeric" autocomplete="off" aria-label="Register number">
+            <button class="tab small" id="next" type="button" aria-label="Next plate">›</button>
           </div>
-        </label>
-        <button class="primary" id="roll">New specimen</button>
-        <label class="field" for="kind">Kind
-          <select id="kind">
-            <option value="any">Any (from seed)</option>
-            <option value="crystal">Single crystal</option>
-            <option value="cluster">Crystal cluster</option>
-            <option value="agate">Banded section</option>
-            <option value="slab">Polished slab</option>
-            <option value="matrix">Crystals on matrix</option>
-            <option value="rock">Rough specimen</option>
-            <option value="gem">Cut stone</option>
-          </select>
-        </label>
-        <label class="field" for="palette">Palette
-          <select id="palette"><option value="any">Any (from seed)</option></select>
-        </label>
-        <label class="field" for="scale">
-          <span class="field-head">Specimen size <output id="scale-out" for="scale">100%</output></span>
-          <input type="range" id="scale" min="50" max="140" step="5" value="100">
-        </label>
-        <label class="field" for="res">Image size
-          <select id="res">
-            <option value="800">Small · 800 × 1000 px</option>
-            <option value="1200">Screen · 1200 × 1500 px</option>
-            <option value="2400">Print · 2400 × 3000 px</option>
-            <option value="3600">Large print · 3600 × 4500 px</option>
-          </select>
-        </label>
-        <div class="checks" role="group" aria-label="Print effects">
-          <label><input type="checkbox" id="fx-misreg" checked> Misregistration</label>
-          <label><input type="checkbox" id="fx-grain" checked> Paper grain</label>
-          <label><input type="checkbox" id="fx-foxing" checked> Foxing</label>
-          <label><input type="checkbox" id="fx-label" checked> Caption</label>
+          <span class="hint" id="hint" aria-live="polite">or the space-bar, for another</span>
         </div>
-        <div class="row">
-          <button id="copy">Copy image</button>
-        </div>
-        <p class="hint" id="status"></p>
-        <p class="hint"><kbd>Space</kbd> new specimen · <kbd>←</kbd> <kbd>→</kbd> step seed. Changing palette or size keeps the same rock. Copy image copies at the chosen image size.</p>
       </div>
-    </aside>
-  </div>
 
-  <section class="strip">
-    <h3>Neighbouring seeds</h3>
-    <p>The next eight seeds with the current settings. Click one to open it.</p>
-    <div id="thumbs"></div>
-  </section>
-</div>
+      <p class="section-head">Instructions to the Engraver</p>
+
+      <form class="form" id="form" autocomplete="off">
+        <div class="field"><label for="theme">Subject</label><select id="theme"><option value="any">Left to chance</option></select></div>
+        <div class="field"><label for="family">Colouring</label><select id="family"><option value="any">As the subject directs</option></select></div>
+        <div class="ruler-field">
+          <div class="ruler-head"><label class="label-sc" for="count">Number of Figures</label><output id="count-out" for="count">ten</output></div>
+          <input type="range" id="count" min="4" max="16" step="1" value="10">
+        </div>
+        <div class="field"><label for="res">Fineness</label>
+          <select id="res">
+            <option value="1200">A proof, 1200 × 1600 px</option>
+            <option value="2400">Fine, 2400 × 3200 px</option>
+            <option value="3600">Very fine, 3600 × 4800 px</option>
+          </select>
+        </div>
+        <div class="actions">
+          <label class="tick"><input type="checkbox" id="fx-captions" checked> Letter &amp; explain the figures</label>
+          <button class="tab" id="download" type="button">Download</button>
+        </div>
+        <p class="note" id="download-status" aria-live="polite" hidden></p>
+      </form>
+
+      <p class="section-head">Plates lately engraved</p>
+      <ol class="ledger" id="ledger"></ol>
+      <p class="ledger-empty" id="ledger-empty">None yet; the ledger fills as you engrave.</p>
+    </section>
+</main>
 
 <script src="specimen-engine.js"></script>
+<script src="poster.js"></script>
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
-const state = { seed: 1, kind: 'any', palette: 'any', scale: 100, res: 1200, fx: { misreg: true, grain: true, foxing: true, label: true } };
-for (const [k, p] of Object.entries(PALETTES)) { const o = document.createElement('option'); o.value = k; o.textContent = p.name; $('palette').appendChild(o); }
-try { const saved = JSON.parse(localStorage.getItem('specimen-press') || 'null'); if (saved) Object.assign(state, saved, { fx: { ...state.fx, ...(saved.fx || {}) } }); } catch (e) { }
-if (!Number.isFinite(+state.seed)) state.seed = 1;
-if (![800, 1200, 2400, 3600].includes(+state.res)) state.res = 1200;
-if (!Number.isFinite(+state.scale)) state.scale = 100;
+const WORDS = ['nought', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen'];
+const SHEET = ASPECTS['3:4'], FX_KEYS = ['captions'], IDLE_HINT = 'or the space-bar, for another';
+const state = { seed: 1, theme: 'any', family: 'any', count: 10, res: 1200, fx: { captions: true } };
 
-function syncControls() {
-  $('seed').value = state.seed; $('kind').value = state.kind; $('palette').value = state.palette;
-  $('scale').value = state.scale; $('scale-out').textContent = state.scale + '%'; $('res').value = state.res;
-  for (const k of Object.keys(state.fx)) $('fx-' + k).checked = state.fx[k];
+// Subject and colouring menus
+for (const [k, t] of Object.entries(THEMES)) $('theme').add(new Option(t.name, k));
+const famGroup = document.createElement('optgroup'); famGroup.label = 'A family of colours';
+for (const [k, f] of Object.entries(FAMILIES)) famGroup.appendChild(new Option(f.name, k));
+const palGroup = document.createElement('optgroup'); palGroup.label = 'After a single mineral';
+for (const [k, p] of Object.entries(PALETTES)) palGroup.appendChild(new Option(p.name, 'pal:' + k));
+$('family').append(famGroup, palGroup);
+
+// settings persist; the register (and subject, colouring, figures) also travel in the link, e.g. #4117-quartz-blue-10
+try { const saved = JSON.parse(localStorage.getItem('specimen-posters') || 'null'); if (saved) Object.assign(state, saved, { fx: { ...state.fx, ...(saved.fx || {}) } }); } catch (e) { }
+const validFamily = f => f === 'any' || !!FAMILIES[f] || (f.startsWith('pal:') && !!PALETTES[f.slice(4)]);
+function readHash() {
+  const parts = decodeURIComponent(location.hash.slice(1)).split('-');
+  if (!/^\d+$/.test(parts[0] || '')) return;
+  state.seed = +parts[0];
+  for (const p of parts.slice(1)) {
+    if (THEMES[p]) state.theme = p;
+    else if (/^\d+$/.test(p) && +p >= 4 && +p <= 16) state.count = +p;
+    else if (p.startsWith('p_') && PALETTES[p.slice(2)]) state.family = 'pal:' + p.slice(2);
+    else if (FAMILIES[p]) state.family = p;
+  }
 }
-const params = seed => ({ seed: String(seed), kind: state.kind, palette: state.palette, scale: state.scale / 100, fx: state.fx });
-let thumbJob = 0;
-function draw() {
-  try { localStorage.setItem('specimen-press', JSON.stringify(state)); } catch (e) { }
-  const cv = $('plate'), w = +state.res;
-  if (cv.width !== w) { cv.width = w; cv.height = w * 1.25; }
-  const res = renderPlate(cv, params(state.seed)), nm = res.nm;
-  $('c-plate').textContent = `Plate ${nm.plate * 7 + 3} · Fig. ${nm.fig} · Seed ${state.seed}`;
-  $('c-name').textContent = nm.title;
-  $('c-kind').textContent = KINDS[res.kind].label;
-  $('c-form').textContent = res.info.form;
-  $('c-pal').textContent = PALETTES[res.palKey].name;
-  $('c-size').textContent = `${cv.width} × ${cv.height} px · specimen ${state.scale}%`;
-  drawThumbs(++thumbJob);
+function writeHash() {
+  const parts = [state.seed];
+  if (state.theme !== 'any') parts.push(state.theme);
+  if (state.family !== 'any') parts.push(state.family.startsWith('pal:') ? 'p_' + state.family.slice(4) : state.family);
+  parts.push(state.count);
+  try { history.replaceState(null, '', '#' + parts.join('-')); } catch (e) { }
 }
-function drawThumbs(job) {
-  const box = $('thumbs'); box.innerHTML = '';
-  const cells = [...Array(8)].map((_, i) => {
-    const s = +state.seed + i + 1;
-    const b = document.createElement('button'); b.className = 'thumb'; b.type = 'button'; b.setAttribute('aria-label', `Open seed ${s}`);
-    const c = document.createElement('canvas'); c.width = 240; c.height = 300; const l = document.createElement('span'); l.textContent = '№ ' + s;
-    b.append(c, l); b.addEventListener('click', () => { state.seed = s; syncControls(); draw(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
-    box.appendChild(b); return { s, c };
+readHash();
+if (!Number.isFinite(+state.seed)) state.seed = 1;
+delete state.title;
+if (!THEMES[state.theme]) state.theme = 'any';
+if (!validFamily(state.family)) state.family = 'any';
+if (![1200, 2400, 3600].includes(+state.res)) state.res = 1200;
+$('year').textContent = 'Anno ' + roman(new Date().getFullYear());
+
+// the page itself is printed on the same paper as the plate
+function paintDesk() {
+  const c = $('desk'), dpr = Math.min(1.5, window.devicePixelRatio || 1);
+  c.width = Math.round(innerWidth * dpr); c.height = Math.round(innerHeight * dpr);
+  drawPaper(c.getContext('2d'), c.width, c.height, c.width / 1000, STYLE, new Rand(1776), { grain: true, foxing: false });
+}
+let deskTimer; addEventListener('resize', () => { clearTimeout(deskTimer); deskTimer = setTimeout(paintDesk, 150); });
+paintDesk();
+
+// the ledger of plates lately engraved
+let ledger = [];
+try { ledger = JSON.parse(localStorage.getItem('specimen-press-ledger') || '[]').filter(e => e && Number.isFinite(+e.seed)); } catch (e) { }
+function note(res) {
+  const entry = { seed: state.seed, theme: state.theme, family: state.family, count: state.count, name: res.title, plate: res.plate };
+  const same = e => e.seed === entry.seed && e.theme === entry.theme && e.family === entry.family && e.count === entry.count;
+  ledger = [entry, ...ledger.filter(e => !same(e))].slice(0, 12);
+  try { localStorage.setItem('specimen-press-ledger', JSON.stringify(ledger)); } catch (e) { }
+  showLedger();
+}
+function showLedger() {
+  const ol = $('ledger'); ol.innerHTML = '';
+  $('ledger-empty').hidden = ledger.length > 0;
+  ledger.forEach((e, i) => {
+    const li = document.createElement('li'), b = document.createElement('button');
+    b.type = 'button'; b.innerHTML = '<span class="no"></span><span class="t"></span><span class="dots"></span>';
+    b.querySelector('.no').textContent = 'Nº ' + e.seed;
+    b.querySelector('.t').textContent = e.name;
+    b.querySelector('.dots').textContent = WORDS[e.count] + ' figs.';
+    b.setAttribute('aria-label', `Return to plate ${e.seed}, ${e.name}`);
+    b.addEventListener('click', () => { Object.assign(state, { seed: e.seed, theme: e.theme, family: validFamily(e.family) ? e.family : 'any', count: e.count }); sync(); draw(); });
+    li.appendChild(b); ol.appendChild(li);
   });
-  let i = 0;
-  const step = () => {
-    if (job !== thumbJob || i >= cells.length) return;
-    const { s, c } = cells[i++];
-    renderPlate(c, { ...params(s), fx: { ...state.fx, label: false } });
-    setTimeout(step, 0);
-  };
-  setTimeout(step, 30);
 }
-const bump = d => { state.seed = Math.max(0, (+state.seed || 0) + d); syncControls(); draw(); };
+
+function sync() {
+  $('seed').value = state.seed; $('theme').value = state.theme; $('family').value = state.family;
+  $('count').value = state.count; $('count-out').textContent = WORDS[state.count]; $('res').value = state.res;
+  for (const k of FX_KEYS) $('fx-' + k).checked = state.fx[k];
+}
+let job = 0, lastRes = null;
+async function draw() {
+  try { localStorage.setItem('specimen-posters', JSON.stringify(state)); } catch (e) { }
+  writeHash();
+  const my = ++job, cv = $('poster'), w = +state.res, h = Math.round(w * SHEET);
+  const out = document.createElement('canvas'); out.width = w; out.height = h;
+  $('hint').textContent = 'The engraver takes up his burin…';
+  const res = await renderPoster(out, { seed: String(state.seed), theme: state.theme, family: state.family, count: state.count, fx: { captions: state.fx.captions !== false, frame: true, foxing: false, paper: false } },
+    (done, total, label) => { if (my === job) $('hint').textContent = label + '…'; },
+    () => my !== job);
+  if (!res || my !== job) return;
+  cv.width = w; cv.height = h; cv.getContext('2d').drawImage(out, 0, 0);
+  $('hint').textContent = IDLE_HINT;
+  lastRes = res; note(res);
+}
+const bump = d => { state.seed = Math.max(0, (+state.seed || 0) + d); sync(); draw(); };
 $('prev').onclick = () => bump(-1);
 $('next').onclick = () => bump(1);
-$('roll').onclick = () => { state.seed = Math.floor(Math.random() * 99999); syncControls(); draw(); };
-$('seed').addEventListener('change', e => { const v = parseInt(e.target.value, 10); state.seed = Number.isFinite(v) ? Math.abs(v) : hash(e.target.value) % 99999; syncControls(); draw(); });
-for (const k of ['kind', 'palette']) $(k).addEventListener('change', e => { state[k] = e.target.value; draw(); });
-$('scale').addEventListener('input', e => { $('scale-out').textContent = e.target.value + '%'; });
-$('scale').addEventListener('change', e => { state.scale = +e.target.value; draw(); });
+$('roll').onclick = () => { state.seed = Math.floor(Math.random() * 9999) + 1; sync(); draw(); };
+$('form').addEventListener('submit', e => e.preventDefault());
+$('seed').addEventListener('change', e => { const v = parseInt(e.target.value, 10); state.seed = Number.isFinite(v) ? Math.abs(v) : hash(e.target.value) % 9999; sync(); draw(); });
+$('seed').addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
+for (const k of ['theme', 'family']) $(k).addEventListener('change', e => { state[k] = e.target.value; draw(); });
 $('res').addEventListener('change', e => { state.res = +e.target.value; draw(); });
-for (const k of Object.keys(state.fx)) $('fx-' + k).addEventListener('change', e => { state.fx[k] = e.target.checked; draw(); });
+$('count').addEventListener('input', e => { $('count-out').textContent = WORDS[+e.target.value]; });
+$('count').addEventListener('change', e => { state.count = +e.target.value; draw(); });
+for (const k of FX_KEYS) $('fx-' + k).addEventListener('change', e => { state.fx[k] = e.target.checked; draw(); });
+addEventListener('hashchange', () => { readHash(); sync(); draw(); });
 document.addEventListener('keydown', e => {
   if (e.target.closest('input, select, textarea')) return;
   if (e.code === 'Space') { e.preventDefault(); $('roll').click(); }
   else if (e.key === 'ArrowRight') bump(1);
   else if (e.key === 'ArrowLeft') bump(-1);
 });
-$('copy').addEventListener('click', () => {
-  const status = $('status'), fail = () => { status.textContent = 'This viewer blocked the clipboard. Right-click the plate and choose Save Image instead.'; };
-  try {
-    const blob = new Promise(res => $('plate').toBlob(res, 'image/png'));
-    navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
-      .then(() => { status.textContent = `Copied the plate at ${$('plate').width} × ${$('plate').height} px.`; })
-      .catch(fail);
-  } catch (e) { fail(); }
+// on the page the plate is printed straight onto the page paper; a download gets a sheet of its own
+function onPaper() {
+  const src = $("poster"), c = document.createElement("canvas"); c.width = src.width; c.height = src.height;
+  const x = c.getContext("2d");
+  drawPaper(x, c.width, c.height, c.width / 1000, STYLE, new Rand(hash("poster-paper|" + state.seed)), { grain: true, foxing: false });
+  x.globalCompositeOperation = "multiply"; x.drawImage(src, 0, 0);
+  return c;
+}
+// Download: inside a claude.ai artifact the page offers the file through the viewer (the `downloads`
+// capability shows a save confirmation); anywhere else, an ordinary browser download.
+const hosted = !!(window.claude && window.claude.use);
+const downloadsReady = hosted ? window.claude.use('downloads').catch(() => null) : Promise.resolve(null);
+if (hosted) downloadsReady.then(d => { if (!d) $('download').hidden = true; });
+const say = t => { const s = $('download-status'); s.hidden = !t; s.textContent = t || ''; };
+function fileName() {
+  const slug = (lastRes ? lastRes.title : 'plate').toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return `specimen-press-${state.seed}-${slug}.png`;
+}
+$('download').addEventListener('click', async () => {
+  say('');
+  const blob = await new Promise(res => onPaper().toBlob(res, 'image/png'));
+  if (!blob) { say('The plate would not come off the press; try again.'); return; }
+  if (hosted) {
+    const downloads = await downloadsReady;
+    if (!downloads) { say('Saving is not possible in this view.'); return; }
+    try { await downloads.save({ filename: fileName(), data: blob }); say('The plate is saved to your computer.'); }
+    catch (e) {
+      const code = e && e.code;
+      if (code === 'declined') say('');
+      else if (code === 'rate_limited') say('A save is already waiting for your answer.');
+      else say('Saving is not possible in this view.');
+    }
+    return;
+  }
+  const a = document.createElement('a'), url = URL.createObjectURL(blob);
+  a.href = url; a.download = fileName(); document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+  say('The plate is saved to your computer.');
 });
-
-syncControls();
-const fontsReady = Promise.all(['italic 30px "IM Fell English"', '30px "IM Fell English"'].map(f => document.fonts.load(f).catch(() => null)));
+sync(); showLedger();
+const fontsReady = Promise.all(['italic 30px "IM Fell English"', '30px "IM Fell English SC"'].map(f => document.fonts.load(f).catch(() => null)));
 Promise.race([fontsReady, new Promise(r => setTimeout(r, 2500))]).then(draw);
 </script>

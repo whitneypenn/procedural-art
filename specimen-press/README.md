@@ -6,8 +6,8 @@ Procedural mineral specimens drawn as 19th-century hand-coloured engravings: the
 
 | File | What it is |
 |---|---|
-| `index.html` | The generator. One specimen at a time, with seed, kind, palette, specimen size and image size controls. <kbd>Space</kbd> draws a new specimen, <kbd>←</kbd> <kbd>→</kbd> step through seeds. |
-| `poster.html` | Posters: a whole plate of specimens under one title. Choose a subject (The Mineral Kingdom, Quartz & its Varieties, Agates, Precious Stones, Ores, A Cabinet of Minerals), a colouring (a family of colours or a single mineral's palette), how many figures, and the fineness, up to 3600 × 4800 px for printing. Titles, subtitles and the explanation of the plate are generated from what is on it; the register number travels in the link, and Download saves a PNG. |
+| `index.html` | The Specimen Press: a whole plate of specimens under one title, printed as an atlas plate. Choose a subject (The Mineral Kingdom, Quartz & its Varieties, Agates, Precious Stones, Ores, A Cabinet of Minerals), a colouring (a family of colours or a single mineral's palette), how many figures, and the fineness, up to 3600 × 4800 px for printing. Titles, subtitles and the explanation of the plate are generated from what is on it; the register number travels in the link, and Download saves a PNG. |
+| `specimen.html` | One specimen at a time, with seed, kind, palette, specimen size and image size controls. <kbd>Space</kbd> draws a new specimen, <kbd>←</kbd> <kbd>→</kbd> step through seeds. |
 | `catalogue.html` | Every specimen kind in every palette, one example per square. Click a plate to see it larger. |
 | `tools/review.html` | Side-by-side review sheet for development. Query parameters: `kind`, `type` (sub-type, e.g. `sunburst`, `waterline`, `veins`), `pal`, `n`, `cols`, `seed`, `scale`, `w`, `label=0`. |
 | `specimen-engine.js` | The drawing engine all the pages share. |
