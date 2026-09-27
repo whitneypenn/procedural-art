@@ -1,0 +1,135 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Specimen Catalogue</title>
+<meta name="description" content="Every specimen kind in every palette, drawn as hand-coloured engravings.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #191b1a;
+    --panel: #222523;
+    --line: #3a3e3b;
+    --text: #e8e2d2;
+    --muted: #a09b8c;
+    --brass: #c9ab6b;
+    --brass-ink: #191b1a;
+    --focus: #e3c888;
+    --display: "IM Fell English", "Iowan Old Style", Georgia, serif;
+    --body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  }
+  html, body { background: var(--bg); color: var(--text); }
+  body { font-family: var(--body); font-size: 14px; line-height: 1.45; padding-inline: 20px; padding-block: 24px 48px; }
+  header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 18px; border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 18px; }
+  h1 { font-family: var(--display); font-weight: 400; font-size: 34px; margin: 0; }
+  header p { margin: 0; color: var(--muted); flex: 1 1 320px; }
+  .tools { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  button { font: 500 13px var(--body); color: var(--text); background: #2a2d2b; border: 1px solid var(--line); padding: 7px 12px; border-radius: 3px; cursor: pointer; }
+  button.primary { background: var(--brass); color: var(--brass-ink); border-color: var(--brass); }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+  #progress { color: var(--muted); font: 12px var(--mono); font-variant-numeric: tabular-nums; }
+  .scroller { overflow-x: auto; padding-bottom: 8px; }
+  table { border-collapse: separate; border-spacing: 10px 14px; margin: -14px -10px; }
+  th { font-weight: 400; text-align: left; vertical-align: bottom; }
+  thead th { font: 11px var(--body); text-transform: uppercase; letter-spacing: .08em; color: var(--muted); padding: 0 2px 2px; white-space: nowrap; }
+  thead th .sw { display: flex; height: 6px; margin-top: 5px; width: 100%; }
+  thead th .sw i { flex: 1; }
+  tbody th { font-family: var(--display); font-size: 18px; line-height: 1.15; vertical-align: middle; width: 110px; min-width: 110px; position: sticky; left: 0; background: var(--bg); z-index: 1; padding-right: 6px; }
+  tbody th small { display: block; font: 11px var(--body); color: var(--muted); margin-top: 3px; }
+  td { vertical-align: top; }
+  .cell { background: none; border: 0; padding: 0; display: grid; gap: 5px; width: 132px; text-align: left; color: var(--text); cursor: zoom-in; }
+  .cell canvas { width: 132px; height: 165px; display: block; background: #f4eddd; box-shadow: 0 5px 12px rgba(0,0,0,.45); }
+  .cell:hover canvas { outline: 1px solid var(--brass); }
+  .cell span { font: italic 13px/1.2 var(--display); color: var(--text); min-height: 2.4em; }
+  dialog { background: var(--panel); color: var(--text); border: 1px solid var(--line); padding: 16px; max-width: min(94vw, 620px); width: 100%; }
+  dialog::backdrop { background: rgba(10,11,10,.75); }
+  dialog canvas { width: 100%; height: auto; aspect-ratio: 4 / 5; display: block; background: #f4eddd; }
+  .dlg-head { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin-bottom: 12px; }
+  .dlg-head h2 { font: italic 22px var(--display); margin: 0; }
+  .dlg-head p { margin: 2px 0 0; color: var(--muted); font-size: 12px; font-family: var(--mono); }
+</style>
+
+<header>
+  <h1>Specimen Catalogue</h1>
+  <p>Each specimen kind in each palette, one example per square. Click a plate to see it larger.</p>
+  <div class="tools">
+    <button class="primary" id="shuffle">Draw new examples</button>
+    <span id="progress" aria-live="polite"></span>
+  </div>
+</header>
+
+<div class="scroller">
+  <table>
+    <thead><tr id="head"><th></th></tr></thead>
+    <tbody id="body"></tbody>
+  </table>
+</div>
+
+<dialog id="dlg" aria-labelledby="dlg-title">
+  <div class="dlg-head">
+    <div><h2 id="dlg-title"></h2><p id="dlg-meta"></p></div>
+    <button id="dlg-close">Close</button>
+  </div>
+  <canvas id="dlg-canvas" width="1000" height="1250"></canvas>
+</dialog>
+
+<script src="specimen-engine.js"></script>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const KIND_KEYS = Object.keys(KINDS), PAL_KEYS = Object.keys(PALETTES);
+let base = 1000, job = 0;
+const seedFor = (r, c) => base + r * 100 + c;
+
+// header: palette names with a swatch strip
+for (const pk of PAL_KEYS) {
+  const th = document.createElement('th'); th.scope = 'col'; th.textContent = PALETTES[pk].name;
+  const sw = document.createElement('span'); sw.className = 'sw';
+  for (const c of PALETTES[pk].ramp) { const i = document.createElement('i'); i.style.background = c; sw.appendChild(i); }
+  th.appendChild(sw); $('head').appendChild(th);
+}
+const cells = [];
+KIND_KEYS.forEach((kk, r) => {
+  const tr = document.createElement('tr'), th = document.createElement('th');
+  th.scope = 'row'; th.innerHTML = `${KINDS[kk].label}<small>${PAL_KEYS.length} palettes</small>`; tr.appendChild(th);
+  PAL_KEYS.forEach((pk, c) => {
+    const td = document.createElement('td'), b = document.createElement('button'); b.className = 'cell'; b.type = 'button';
+    const cv = document.createElement('canvas'); cv.width = 264; cv.height = 330;
+    const nm = document.createElement('span'); nm.textContent = '…';
+    b.append(cv, nm); td.appendChild(b); tr.appendChild(td);
+    const cell = { r, c, kk, pk, cv, nm, b };
+    b.addEventListener('click', () => openCell(cell));
+    cells.push(cell);
+  });
+  $('body').appendChild(tr);
+});
+
+function drawAll() {
+  const my = ++job; let i = 0;
+  const step = () => {
+    if (my !== job) return;
+    if (i >= cells.length) { $('progress').textContent = `${cells.length} plates drawn`; return; }
+    const cell = cells[i++], seed = seedFor(cell.r, cell.c);
+    const res = renderPlate(cell.cv, { seed: String(seed), kind: cell.kk, palette: cell.pk, fx: { misreg: true, grain: true, foxing: true, label: false } });
+    cell.nm.textContent = res.nm.title; cell.b.setAttribute('aria-label', `${res.nm.title}, ${KINDS[cell.kk].label}, ${PALETTES[cell.pk].name}. Open larger.`);
+    $('progress').textContent = `Drawing ${i} of ${cells.length}…`;
+    setTimeout(step, 0);
+  };
+  step();
+}
+function openCell(cell) {
+  const seed = seedFor(cell.r, cell.c);
+  const res = renderPlate($('dlg-canvas'), { seed: String(seed), kind: cell.kk, palette: cell.pk });
+  $('dlg-title').textContent = res.nm.title;
+  $('dlg-meta').textContent = `${KINDS[cell.kk].label} · ${res.info.form} · ${PALETTES[cell.pk].name} · seed ${seed}`;
+  $('dlg').showModal();
+}
+$('dlg-close').onclick = () => $('dlg').close();
+$('dlg').addEventListener('click', e => { if (e.target === $('dlg')) $('dlg').close(); });
+$('shuffle').onclick = () => { base = Math.floor(Math.random() * 90000) + 1000; drawAll(); };
+
+const fontsReady = document.fonts.load('italic 30px "IM Fell English"').catch(() => null);
+Promise.race([fontsReady, new Promise(r => setTimeout(r, 2500))]).then(drawAll);
+</script>
